@@ -2,7 +2,8 @@
 import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import type { Policy } from "@/lib/types";
+import { ClaimTracker } from "@/components/claims/claim-tracker";
+import type { Policy, Claim, PolicyBenefit } from "@/lib/types";
 
 // Mock data for demonstration
 const mockPolicy: Policy = {
@@ -14,6 +15,67 @@ const mockPolicy: Policy = {
   premium: 1200,
   sumInsured: 500000,
   status: "active",
+  benefits: [
+    {
+      name: "Hospitalization",
+      totalAmount: 300000,
+      consumedAmount: 50000,
+      description: "Coverage for hospital stays",
+    },
+    {
+      name: "Outpatient Care",
+      totalAmount: 100000,
+      consumedAmount: 15000,
+      description: "Coverage for outpatient treatments",
+    },
+    {
+      name: "Medications",
+      totalAmount: 100000,
+      consumedAmount: 10000,
+      description: "Coverage for prescribed medications",
+    },
+  ],
+};
+
+const mockClaim: Claim = {
+  id: "CLM-001",
+  policyId: "1",
+  type: "Hospitalization",
+  amount: 25000,
+  status: "processing",
+  createdDate: new Date("2024-03-01"),
+  updatedDate: new Date("2024-03-05"),
+  hospitalId: "H123",
+  currentStep: 2,
+  steps: [
+    {
+      id: 1,
+      title: "Claim Submitted",
+      description: "Your claim has been successfully submitted",
+      date: new Date("2024-03-01"),
+      completed: true,
+    },
+    {
+      id: 2,
+      title: "Document Verification",
+      description: "We are reviewing your submitted documents",
+      date: new Date("2024-03-03"),
+      completed: true,
+    },
+    {
+      id: 3,
+      title: "Hospital Verification",
+      description: "Verifying details with the hospital",
+      date: new Date("2024-03-05"),
+      completed: false,
+    },
+    {
+      id: 4,
+      title: "Payment Processing",
+      description: "Processing your claim payment",
+      completed: false,
+    },
+  ],
 };
 
 const PolicyDetails = () => {
@@ -65,36 +127,8 @@ const PolicyDetails = () => {
           </Card>
 
           <Card className="p-6 animate-fadeIn">
-            <h2 className="text-xl font-semibold mb-4">Benefits Overview</h2>
-            <ul className="space-y-4">
-              <li className="flex items-start">
-                <span className="h-2 w-2 mt-2 rounded-full bg-sage-500 mr-3" />
-                <div>
-                  <p className="font-medium">Hospitalization Coverage</p>
-                  <p className="text-sm text-muted-foreground">
-                    Covers room charges, ICU, medical practitioner fees
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="h-2 w-2 mt-2 rounded-full bg-sage-500 mr-3" />
-                <div>
-                  <p className="font-medium">Pre & Post Hospitalization</p>
-                  <p className="text-sm text-muted-foreground">
-                    30 days before and 60 days after hospitalization
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="h-2 w-2 mt-2 rounded-full bg-sage-500 mr-3" />
-                <div>
-                  <p className="font-medium">Day Care Treatment</p>
-                  <p className="text-sm text-muted-foreground">
-                    Coverage for treatments that require less than 24 hours
-                  </p>
-                </div>
-              </li>
-            </ul>
+            <h2 className="text-xl font-semibold mb-4">Claims & Benefits</h2>
+            <ClaimTracker claim={mockClaim} benefits={mockPolicy.benefits} />
           </Card>
         </div>
       </div>

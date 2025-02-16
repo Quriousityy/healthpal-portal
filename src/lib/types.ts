@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   email: string;
@@ -5,6 +6,13 @@ export interface User {
   lastName: string;
   dateOfBirth: Date;
   contact: string;
+}
+
+export interface PolicyBenefit {
+  name: string;
+  totalAmount: number;
+  consumedAmount: number;
+  description: string;
 }
 
 export interface Policy {
@@ -15,7 +23,8 @@ export interface Policy {
   endDate: Date;
   premium: number;
   sumInsured: number;
-  status: string;
+  status: PolicyStatus;
+  benefits: PolicyBenefit[];
 }
 
 export interface Claim {
@@ -23,11 +32,21 @@ export interface Claim {
   policyId: string;
   type: string;
   amount: number;
-  status: string;
+  status: ClaimStatus;
   createdDate: Date;
   updatedDate: Date;
   hospitalId?: string;
   diagnosis?: string;
+  currentStep: number;
+  steps: ClaimStep[];
+}
+
+export interface ClaimStep {
+  id: number;
+  title: string;
+  description: string;
+  date?: Date;
+  completed: boolean;
 }
 
 export type PolicyStatus = "active" | "expired" | "pending";
@@ -41,4 +60,5 @@ export interface Product {
   monthlyPremium: number;
   benefits: string[];
   type: "individual" | "family" | "senior";
+  imagePath: string;
 }

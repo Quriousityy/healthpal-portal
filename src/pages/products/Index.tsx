@@ -16,6 +16,7 @@ const mockProducts: Product[] = [
       "Prescription drugs",
     ],
     type: "individual",
+    imagePath: "/individual-health.jpg",
   },
   {
     id: "2",
@@ -30,6 +31,7 @@ const mockProducts: Product[] = [
       "Regular health checkups",
     ],
     type: "family",
+    imagePath: "/family-health.jpg",
   },
   {
     id: "3",
@@ -44,6 +46,7 @@ const mockProducts: Product[] = [
       "Prescription drug coverage",
     ],
     type: "senior",
+    imagePath: "/senior-health.jpg",
   },
 ];
 
@@ -62,11 +65,18 @@ const ProductsPage = () => {
           {mockProducts.map((product) => (
             <Card
               key={product.id}
-              className="p-6 hover:shadow-lg transition-shadow animate-fadeIn"
+              className="overflow-hidden hover:shadow-lg transition-shadow animate-fadeIn"
             >
-              <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-              <p className="text-muted-foreground mb-4">{product.description}</p>
-              <div className="space-y-4">
+              <div className="aspect-video relative">
+                <img
+                  src={product.imagePath}
+                  alt={product.name}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="p-6 space-y-4">
+                <h3 className="text-xl font-semibold">{product.name}</h3>
+                <p className="text-muted-foreground">{product.description}</p>
                 <div>
                   <p className="text-sm text-muted-foreground">Coverage</p>
                   <p className="text-2xl font-semibold text-sage-600">
