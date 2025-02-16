@@ -16,7 +16,7 @@ const mockProducts: Product[] = [
       "Prescription drugs",
     ],
     type: "individual",
-    imagePath: "/individual-health.jpg",
+    imagePath: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800",
   },
   {
     id: "2",
@@ -31,7 +31,7 @@ const mockProducts: Product[] = [
       "Regular health checkups",
     ],
     type: "family",
-    imagePath: "/family-health.jpg",
+    imagePath: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800",
   },
   {
     id: "3",
@@ -46,7 +46,7 @@ const mockProducts: Product[] = [
       "Prescription drug coverage",
     ],
     type: "senior",
-    imagePath: "/senior-health.jpg",
+    imagePath: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800",
   },
 ];
 

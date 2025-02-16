@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import ProfilePage from "./pages/profile/Index";
 import PolicyDetails from "./pages/policies/[id]";
 import ProductsPage from "./pages/products/Index";
+import NewClaimPage from "./pages/claims/new";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/policies/:id" element={<PolicyDetails />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/claims/new" element={<NewClaimPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<NotFound />} />
