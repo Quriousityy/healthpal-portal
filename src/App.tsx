@@ -8,6 +8,9 @@ import { Layout } from "@/components/layout/layout";
 import Index from "./pages/Index";
 import ProfilePage from "./pages/profile/Index";
 import PolicyDetails from "./pages/policies/[id]";
+import ProductsPage from "./pages/products/Index";
+import SignIn from "./pages/auth/SignIn";
+import SignUp from "./pages/auth/SignUp";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +26,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/policies/:id" element={<PolicyDetails />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

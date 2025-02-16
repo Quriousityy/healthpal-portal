@@ -11,7 +11,7 @@ export function Navbar() {
               HealthPal
             </Link>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-6">
             <Link
               to="/"
               className="text-gray-600 hover:text-sage-600 transition-colors"
@@ -19,10 +19,22 @@ export function Navbar() {
               Dashboard
             </Link>
             <Link
+              to="/products"
+              className="text-gray-600 hover:text-sage-600 transition-colors"
+            >
+              Products
+            </Link>
+            <Link
               to="/profile"
               className="text-gray-600 hover:text-sage-600 transition-colors"
             >
               Profile
+            </Link>
+            <Link
+              to="/signin"
+              className="text-gray-600 hover:text-sage-600 transition-colors"
+            >
+              Sign In
             </Link>
           </div>
         </div>
