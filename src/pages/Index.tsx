@@ -1,3 +1,4 @@
+
 import { PolicyCard } from "@/components/dashboard/policy-card";
 import { ClaimsSection } from "@/components/dashboard/claims-section";
 import type { Policy, Claim } from "@/lib/types";
@@ -128,7 +129,10 @@ const Index = () => {
             <h2 className="text-2xl font-semibold tracking-tight mb-4">
               Your Active Policy
             </h2>
-            <PolicyCard policy={mockPolicies[0]} />
+            <PolicyCard 
+              policy={mockPolicies[0]} 
+              claimsCount={mockClaims.length} 
+            />
           </div>
 
           <div className="md:col-span-2 lg:col-span-3">

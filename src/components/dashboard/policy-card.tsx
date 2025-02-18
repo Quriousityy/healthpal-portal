@@ -6,9 +6,10 @@ import { Link } from "react-router-dom";
 
 interface PolicyCardProps {
   policy: Policy;
+  claimsCount?: number;
 }
 
-export function PolicyCard({ policy }: PolicyCardProps) {
+export function PolicyCard({ policy, claimsCount = 0 }: PolicyCardProps) {
   return (
     <Link to={`/policies/${policy.id}`}>
       <Card className="p-6 hover:shadow-lg transition-shadow animate-fadeIn">
@@ -45,6 +46,11 @@ export function PolicyCard({ policy }: PolicyCardProps) {
                 {new Date(policy.endDate).toLocaleDateString()}
               </p>
             </div>
+          </div>
+
+          <div>
+            <p className="text-sm text-muted-foreground">Active Claims</p>
+            <p className="font-medium text-sage-600">{claimsCount} claims</p>
           </div>
         </div>
       </Card>
