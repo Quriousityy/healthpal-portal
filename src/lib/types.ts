@@ -39,6 +39,23 @@ export interface Claim {
   diagnosis?: string;
   currentStep: number;
   steps: ClaimStep[];
+  icdCode?: string;
+  pcsCode?: string;
+  hospitalDetails?: HospitalDetails;
+  benefitsClaimed: ClaimedBenefit[];
+}
+
+export interface HospitalDetails {
+  name: string;
+  address: string;
+  contact: string;
+  type: "Network" | "Non-Network";
+}
+
+export interface ClaimedBenefit {
+  name: string;
+  amount: number;
+  benefitId: string;
 }
 
 export interface ClaimStep {
