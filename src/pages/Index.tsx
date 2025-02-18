@@ -72,6 +72,26 @@ const mockClaims: Claim[] = [
         date: new Date("2024-02-20"),
       },
     ],
+    benefitsClaimed: [
+      {
+        name: "Hospitalization",
+        amount: 10000,
+        benefitId: "b1"
+      },
+      {
+        name: "Surgery",
+        amount: 5000,
+        benefitId: "b2"
+      }
+    ],
+    hospitalDetails: {
+      name: "City General Hospital",
+      address: "123 Medical Drive",
+      contact: "+1 (555) 123-4567",
+      type: "Network"
+    },
+    icdCode: "K35.80",
+    pcsCode: "0DTJ4ZZ"
   },
   {
     id: "CLM-002",
@@ -110,6 +130,26 @@ const mockClaims: Claim[] = [
         completed: false,
       },
     ],
+    benefitsClaimed: [
+      {
+        name: "Surgery",
+        amount: 20000,
+        benefitId: "b3"
+      },
+      {
+        name: "Room Charges",
+        amount: 5000,
+        benefitId: "b4"
+      }
+    ],
+    hospitalDetails: {
+      name: "Ortho Specialty Hospital",
+      address: "456 Health Avenue",
+      contact: "+1 (555) 987-6543",
+      type: "Network"
+    },
+    icdCode: "M17.0",
+    pcsCode: "0SRC0J9"
   },
 ];
 
