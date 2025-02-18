@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ClaimsSectionProps {
   claims: Claim[];
@@ -22,8 +23,8 @@ export function ClaimsSection({ claims }: ClaimsSectionProps) {
       
       <div className="grid gap-4">
         {claims.map((claim) => (
-          <Card key={claim.id} className="p-4 hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start">
+          <Card key={claim.id} className="p-6 hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-sm text-muted-foreground">Claim ID</p>
                 <p className="font-medium">{claim.id}</p>
@@ -31,17 +32,63 @@ export function ClaimsSection({ claims }: ClaimsSectionProps) {
               <StatusBadge status={claim.status} />
             </div>
             
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Amount</p>
-                <p className="font-medium">${claim.amount.toLocaleString()}</p>
+            <div className="grid gap-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Amount</p>
+                  <p className="font-medium">${claim.amount.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Date</p>
+                  <p className="font-medium">
+                    {new Date(claim.createdDate).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Date</p>
-                <p className="font-medium">
-                  {new Date(claim.createdDate).toLocaleDateString()}
-                </p>
+
+              <div className="mt-4">
+                <h4 className="text-sm font-medium mb-3">Claim Progress</h4>
+                <div className="space-y-4">
+                  {claim.steps.map((step, index) => (
+                    <div key={step.id} className="flex items-start relative">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${
+                          step.completed
+                            ? "bg-sage-600 text-white"
+                            : "bg-gray-200 text-gray-600"
+                        }`}
+                      >
+                        {index + 1}
+                      </div>
+                      {index < claim.steps.length - 1 && (
+                        <div
+                          className={`absolute left-3 top-6 w-0.5 h-8 ${
+                            step.completed ? "bg-sage-600" : "bg-gray-200"
+                          }`}
+                        />
+                      )}
+                      <div className="ml-3">
+                        <p className="text-sm font-medium">{step.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {step.description}
+                        </p>
+                        {step.date && (
+                          <p className="text-xs text-sage-600 mt-1">
+                            {step.date.toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              <Link
+                to={`/claims/${claim.id}`}
+                className="text-sage-600 hover:text-sage-700 text-sm font-medium mt-2 inline-block"
+              >
+                View Details →
+              </Link>
             </div>
           </Card>
         ))}

@@ -2,8 +2,10 @@
 import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { ClaimTracker } from "@/components/claims/claim-tracker";
-import type { Policy, Claim, PolicyBenefit } from "@/lib/types";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import type { Policy } from "@/lib/types";
+
+const COLORS = ["#059669", "#E11D48", "#D97706"];
 
 // Mock data for demonstration
 const mockPolicy: Policy = {
@@ -37,49 +39,13 @@ const mockPolicy: Policy = {
   ],
 };
 
-const mockClaim: Claim = {
-  id: "CLM-001",
-  policyId: "1",
-  type: "Hospitalization",
-  amount: 25000,
-  status: "processing",
-  createdDate: new Date("2024-03-01"),
-  updatedDate: new Date("2024-03-05"),
-  hospitalId: "H123",
-  currentStep: 2,
-  steps: [
-    {
-      id: 1,
-      title: "Claim Submitted",
-      description: "Your claim has been successfully submitted",
-      date: new Date("2024-03-01"),
-      completed: true,
-    },
-    {
-      id: 2,
-      title: "Document Verification",
-      description: "We are reviewing your submitted documents",
-      date: new Date("2024-03-03"),
-      completed: true,
-    },
-    {
-      id: 3,
-      title: "Hospital Verification",
-      description: "Verifying details with the hospital",
-      date: new Date("2024-03-05"),
-      completed: false,
-    },
-    {
-      id: 4,
-      title: "Payment Processing",
-      description: "Processing your claim payment",
-      completed: false,
-    },
-  ],
-};
-
 const PolicyDetails = () => {
   const { id } = useParams();
+  const benefitsData = mockPolicy.benefits.map((benefit) => ({
+    name: benefit.name,
+    value: benefit.totalAmount - benefit.consumedAmount,
+    total: benefit.totalAmount,
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-sage-50">
@@ -127,8 +93,48 @@ const PolicyDetails = () => {
           </Card>
 
           <Card className="p-6 animate-fadeIn">
-            <h2 className="text-xl font-semibold mb-4">Claims & Benefits</h2>
-            <ClaimTracker claim={mockClaim} benefits={mockPolicy.benefits} />
+            <h2 className="text-xl font-semibold mb-4">Overall Benefits Usage</h2>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={benefitsData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    label
+                  >
+                    {benefitsData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 space-y-2">
+              {mockPolicy.benefits.map((benefit, index) => (
+                <div key={benefit.name} className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <span
+                      className="w-3 h-3 rounded-full mr-2"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm">{benefit.name}</span>
+                  </div>
+                  <span className="text-sm font-medium">
+                    ${(benefit.totalAmount - benefit.consumedAmount).toLocaleString()}{" "}
+                    left of ${benefit.totalAmount.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
           </Card>
         </div>
       </div>
