@@ -26,10 +26,20 @@ const MemberDetailsForm = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
-  const form = useForm<FamilyMember>();
+  const form = useForm<Omit<FamilyMember, 'dateOfBirth'> & { dateOfBirth: string }>();
 
-  const handleAddMember = (data: FamilyMember) => {
-    setFamilyMembers([...familyMembers, data]);
+  const handleAddMember = (data: Omit<FamilyMember, 'dateOfBirth'> & { dateOfBirth: string }) => {
+    const memberData: FamilyMember = {
+      ...data,
+      dateOfBirth: new Date(data.dateOfBirth),
+      medicalHistory: {
+        hasExistingConditions: false,
+        hasSurgeries: false,
+        smokingStatus: "never",
+        alcoholConsumption: "never",
+      }
+    };
+    setFamilyMembers([...familyMembers, memberData]);
     form.reset();
   };
 
@@ -90,7 +100,11 @@ const MemberDetailsForm = () => {
                     <FormItem>
                       <FormLabel>Date of Birth</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input 
+                          type="date" 
+                          {...field}
+                          value={field.value || ''} // Ensure we always pass a string
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
