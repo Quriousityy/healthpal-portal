@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email: string;
@@ -78,4 +77,54 @@ export interface Product {
   benefits: string[];
   type: "individual" | "family" | "senior";
   imagePath: string;
+}
+
+export interface InsurancePlan {
+  id: string;
+  name: string;
+  type: "individual" | "family";
+  basePrice: number;
+  description: string;
+  benefits: InsuranceBenefit[];
+  features: string[];
+  minAge: number;
+  maxAge: number;
+}
+
+export interface InsuranceBenefit {
+  name: string;
+  coverage: number;
+  description: string;
+  isOptional: boolean;
+  additionalPrice: number;
+  selected?: boolean;
+}
+
+export interface FamilyMember {
+  relation: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: Date;
+  gender: "male" | "female" | "other";
+  medicalHistory: MedicalHistory;
+  occupation: string;
+  annualIncome: number;
+}
+
+export interface MedicalHistory {
+  hasExistingConditions: boolean;
+  conditions?: string[];
+  hasSurgeries: boolean;
+  surgeries?: string[];
+  smokingStatus: "never" | "former" | "current";
+  alcoholConsumption: "never" | "occasional" | "regular";
+}
+
+export interface QuotationDetails {
+  planType: "individual" | "family";
+  primaryApplicant: FamilyMember;
+  familyMembers?: FamilyMember[];
+  selectedPlanId?: string;
+  selectedBenefits: string[];
+  totalPremium: number;
 }
