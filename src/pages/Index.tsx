@@ -18,15 +18,39 @@ const mockPolicies: Policy[] = [
       {
         name: "Hospitalization",
         totalAmount: 300000,
-        consumedAmount: 50000,
+        consumedAmount: 60000,
         description: "Coverage for hospital stays",
+      },
+      {
+        name: "Surgery",
+        totalAmount: 200000,
+        consumedAmount: 25000,
+        description: "Coverage for surgical procedures",
+      },
+      {
+        name: "Room Charges",
+        totalAmount: 100000,
+        consumedAmount: 15000,
+        description: "Coverage for room rent",
+      },
+      {
+        name: "Medications",
+        totalAmount: 50000,
+        consumedAmount: 5000,
+        description: "Coverage for prescribed medicines",
       },
       {
         name: "Outpatient Care",
         totalAmount: 100000,
-        consumedAmount: 15000,
+        consumedAmount: 20000,
         description: "Coverage for outpatient treatments",
       },
+      {
+        name: "Diagnostic Tests",
+        totalAmount: 75000,
+        consumedAmount: 10000,
+        description: "Coverage for medical tests and diagnostics",
+      }
     ],
   },
 ];
@@ -75,13 +99,18 @@ const mockClaims: Claim[] = [
     benefitsClaimed: [
       {
         name: "Hospitalization",
-        amount: 10000,
+        amount: 35000,
         benefitId: "b1"
       },
       {
         name: "Surgery",
-        amount: 5000,
+        amount: 25000,
         benefitId: "b2"
+      },
+      {
+        name: "Room Charges",
+        amount: 10000,
+        benefitId: "b3"
       }
     ],
     hospitalDetails: {
@@ -96,7 +125,7 @@ const mockClaims: Claim[] = [
   {
     id: "CLM-002",
     policyId: "1",
-    type: "Hospitalization",
+    type: "Surgery",
     amount: 25000,
     status: "pending",
     createdDate: new Date("2024-03-01"),
@@ -132,14 +161,24 @@ const mockClaims: Claim[] = [
     ],
     benefitsClaimed: [
       {
+        name: "Hospitalization",
+        amount: 25000,
+        benefitId: "b4"
+      },
+      {
         name: "Surgery",
-        amount: 20000,
-        benefitId: "b3"
+        amount: 0,
+        benefitId: "b5"
       },
       {
         name: "Room Charges",
         amount: 5000,
-        benefitId: "b4"
+        benefitId: "b6"
+      },
+      {
+        name: "Medications",
+        amount: 5000,
+        benefitId: "b7"
       }
     ],
     hospitalDetails: {
