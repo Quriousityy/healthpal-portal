@@ -25,6 +25,12 @@ export function Navbar() {
               Products
             </Link>
             <Link
+              to="/appointments"
+              className="text-gray-600 hover:text-sage-600 transition-colors"
+            >
+              Book Appointment
+            </Link>
+            <Link
               to="/profile"
               className="text-gray-600 hover:text-sage-600 transition-colors"
             >
