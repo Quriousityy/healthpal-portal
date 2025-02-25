@@ -10,7 +10,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
-  Tooth,
   Stethoscope,
   Pill,
   Building,
@@ -66,9 +65,15 @@ export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardP
     return benefit?.amount || 0;
   };
 
+  // Stop event propagation to prevent the Link from activating when clicking on accordion items
+  const handleAccordionClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
-    <Link to={`/policies/${policy.id}`}>
-      <Card className="p-6 hover:shadow-lg transition-shadow animate-fadeIn">
+    <Card className="p-6 hover:shadow-lg transition-shadow animate-fadeIn">
+      <Link to={`/policies/${policy.id}`} className="block">
         <div className="flex justify-between items-start mb-4">
           <div>
             <p className="text-sm text-muted-foreground">Policy Number</p>
@@ -107,10 +112,15 @@ export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardP
           <div>
             <p className="text-sm text-muted-foreground mb-2">Coverage Benefits</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3" onClick={handleAccordionClick}>
               {policy.benefits.map((benefit) => (
                 <Card key={benefit.name} className="p-3 hover:bg-sage-50 transition-colors">
-                  <Accordion type="single" collapsible>
+                  <Accordion 
+                    type="single" 
+                    collapsible
+                    value={expandedBenefit === benefit.name ? benefit.name : ""}
+                    onValueChange={(value) => setExpandedBenefit(value || null)}
+                  >
                     <AccordionItem value={benefit.name} className="border-none">
                       <AccordionTrigger className="py-1 px-0 hover:no-underline">
                         <div className="flex items-center space-x-2">
@@ -174,7 +184,7 @@ export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardP
             <p className="font-medium text-sage-600">{claimsCount} claims</p>
           </div>
         </div>
-      </Card>
-    </Link>
+      </Link>
+    </Card>
   );
 }
