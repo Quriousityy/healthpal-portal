@@ -211,6 +211,7 @@ const Index = () => {
             <PolicyCard 
               policy={mockPolicies[0]} 
               claimsCount={mockClaims.length} 
+              claims={mockClaims}
             />
           </div>
 

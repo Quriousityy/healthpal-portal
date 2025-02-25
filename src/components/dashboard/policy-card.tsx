@@ -1,28 +1,70 @@
 
-import { Policy } from "@/lib/types";
+import { Policy, Claim } from "@/lib/types";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Link } from "react-router-dom";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Tooth,
+  Stethoscope,
+  Pill,
+  Building,
+  Activity,
+  TestTube,
+  ShieldCheck
+} from "lucide-react";
+import { useState } from "react";
 
 interface PolicyCardProps {
   policy: Policy;
   claimsCount?: number;
+  claims?: Claim[];
 }
 
-const COLORS = ["#059669", "#E11D48", "#D97706", "#0EA5E9"];
+// Function to get the appropriate icon for each benefit type
+const getBenefitIcon = (benefitName: string) => {
+  const iconProps = { className: "mr-2 h-5 w-5" };
+  
+  switch (benefitName.toLowerCase()) {
+    case "hospitalization":
+      return <Building {...iconProps} />;
+    case "surgery":
+      return <Activity {...iconProps} />;
+    case "room charges":
+      return <Building {...iconProps} />;
+    case "medications":
+      return <Pill {...iconProps} />;
+    case "outpatient care":
+      return <Stethoscope {...iconProps} />;
+    case "diagnostic tests":
+      return <TestTube {...iconProps} />;
+    default:
+      return <ShieldCheck {...iconProps} />;
+  }
+};
 
-export function PolicyCard({ policy, claimsCount = 0 }: PolicyCardProps) {
-  const benefitsData = policy.benefits.map((benefit) => [
-    {
-      name: "Consumed",
-      value: benefit.consumedAmount,
-    },
-    {
-      name: "Remaining",
-      value: benefit.totalAmount - benefit.consumedAmount,
-    },
-  ]);
+export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardProps) {
+  const [expandedBenefit, setExpandedBenefit] = useState<string | null>(null);
+
+  // Function to get claims related to a specific benefit
+  const getClaimsForBenefit = (benefitName: string) => {
+    return claims.filter(claim => 
+      claim.benefitsClaimed.some(benefit => benefit.name.toLowerCase() === benefitName.toLowerCase())
+    );
+  };
+
+  // Function to get claimed amount for a specific benefit from a claim
+  const getClaimedAmount = (claim: Claim, benefitName: string) => {
+    const benefit = claim.benefitsClaimed.find(
+      b => b.name.toLowerCase() === benefitName.toLowerCase()
+    );
+    return benefit?.amount || 0;
+  };
 
   return (
     <Link to={`/policies/${policy.id}`}>
@@ -63,43 +105,66 @@ export function PolicyCard({ policy, claimsCount = 0 }: PolicyCardProps) {
           </div>
 
           <div>
-            <p className="text-sm text-muted-foreground mb-4">Benefits Usage</p>
-            <div className="grid gap-6">
-              {policy.benefits.map((benefit, index) => (
-                <div key={benefit.name} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">{benefit.name}</span>
-                    <span className="text-sm text-muted-foreground">
-                      ${(benefit.totalAmount - benefit.consumedAmount).toLocaleString()} remaining
-                    </span>
-                  </div>
-                  <div className="h-[100px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={benefitsData[index]}
-                          dataKey="value"
-                          nameKey="name"
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={25}
-                          outerRadius={40}
-                          fill="#8884d8"
-                        >
-                          <Cell fill={COLORS[index % COLORS.length]} />
-                          <Cell fill={`${COLORS[index % COLORS.length]}33`} />
-                        </Pie>
-                        <Tooltip 
-                          formatter={(value: number) => `$${value.toLocaleString()}`}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Used: ${benefit.consumedAmount.toLocaleString()}</span>
-                    <span>Total: ${benefit.totalAmount.toLocaleString()}</span>
-                  </div>
-                </div>
+            <p className="text-sm text-muted-foreground mb-2">Coverage Benefits</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {policy.benefits.map((benefit) => (
+                <Card key={benefit.name} className="p-3 hover:bg-sage-50 transition-colors">
+                  <Accordion type="single" collapsible>
+                    <AccordionItem value={benefit.name} className="border-none">
+                      <AccordionTrigger className="py-1 px-0 hover:no-underline">
+                        <div className="flex items-center space-x-2">
+                          <div className="p-2 bg-sage-100 rounded-full">
+                            {getBenefitIcon(benefit.name)}
+                          </div>
+                          <div className="flex-1 text-left">
+                            <p className="font-medium">{benefit.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              ${(benefit.totalAmount - benefit.consumedAmount).toLocaleString()} remaining
+                            </p>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="pl-10 space-y-2 mt-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Total Coverage:</span>
+                            <span className="font-medium">${benefit.totalAmount.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Used:</span>
+                            <span className="font-medium">${benefit.consumedAmount.toLocaleString()}</span>
+                          </div>
+                          
+                          <div className="h-2 bg-sage-100 rounded-full mt-1">
+                            <div 
+                              className="h-2 bg-sage-600 rounded-full" 
+                              style={{ 
+                                width: `${(benefit.consumedAmount / benefit.totalAmount) * 100}%` 
+                              }}
+                            ></div>
+                          </div>
+                          
+                          {getClaimsForBenefit(benefit.name).length > 0 && (
+                            <div className="mt-3 pt-3 border-t">
+                              <p className="text-sm font-medium mb-2">Claim History</p>
+                              {getClaimsForBenefit(benefit.name).map((claim) => (
+                                <div key={claim.id} className="flex justify-between text-sm py-1">
+                                  <span className="text-muted-foreground">
+                                    {new Date(claim.createdDate).toLocaleDateString()} ({claim.status})
+                                  </span>
+                                  <span className="font-medium">
+                                    ${getClaimedAmount(claim, benefit.name).toLocaleString()}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </Card>
               ))}
             </div>
           </div>
