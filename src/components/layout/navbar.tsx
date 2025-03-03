@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import { FileText } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -23,6 +24,13 @@ export function Navbar() {
               className="text-gray-600 hover:text-sage-600 transition-colors"
             >
               Products
+            </Link>
+            <Link
+              to="/quotation"
+              className="text-gray-600 hover:text-sage-600 transition-colors flex items-center"
+            >
+              <FileText className="h-4 w-4 mr-1" />
+              Get Quote
             </Link>
             <Link
               to="/appointments"

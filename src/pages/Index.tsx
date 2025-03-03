@@ -1,6 +1,9 @@
 
 import { PolicyCard } from "@/components/dashboard/policy-card";
 import { ClaimsSection } from "@/components/dashboard/claims-section";
+import { Button } from "@/components/ui/button";
+import { FileText, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { Policy, Claim } from "@/lib/types";
 
 // Mock data for demonstration
@@ -204,7 +207,7 @@ const Index = () => {
         </header>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          <div className="md:col-span-2 lg:col-span-3">
+          <div className="md:col-span-2 lg:col-span-2">
             <h2 className="text-2xl font-semibold tracking-tight mb-4">
               Your Active Policy
             </h2>
@@ -213,6 +216,22 @@ const Index = () => {
               claimsCount={mockClaims.length} 
               claims={mockClaims}
             />
+          </div>
+
+          <div className="lg:col-span-1">
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 h-full">
+              <h2 className="text-xl font-semibold mb-4">Need More Coverage?</h2>
+              <p className="text-muted-foreground mb-6">
+                Compare health insurance plans and get a personalized quote in minutes.
+              </p>
+              <Link to="/quotation">
+                <Button className="w-full bg-sage-600 hover:bg-sage-700">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Get Health Insurance Quote
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <div className="md:col-span-2 lg:col-span-3">
