@@ -92,9 +92,14 @@ const QuotationDetails = () => {
   };
 
   const onSubmit = (data: z.infer<typeof applicantSchema>) => {
+    // Create a properly typed primary applicant that meets FamilyMember requirements
     const primaryApplicant: FamilyMember = {
-      ...data,
       relation: "Self",
+      firstName: data.firstName,
+      lastName: data.lastName,
+      dateOfBirth: data.dateOfBirth,
+      gender: data.gender,
+      occupation: data.occupation,
       annualIncome: parseFloat(data.annualIncome),
       medicalHistory: {
         hasExistingConditions: false,
@@ -104,11 +109,41 @@ const QuotationDetails = () => {
       },
     };
 
+    // Ensure all family members have required properties before proceeding
+    let validFamilyMembers: FamilyMember[] = [];
+    if (planType === "family" && familyMembers.length > 0) {
+      // Filter out any incomplete family members
+      validFamilyMembers = familyMembers
+        .filter(member => 
+          member.firstName && 
+          member.lastName && 
+          member.dateOfBirth &&
+          member.gender &&
+          member.relation &&
+          member.occupation
+        )
+        .map(member => ({
+          relation: member.relation!,
+          firstName: member.firstName!,
+          lastName: member.lastName!,
+          dateOfBirth: member.dateOfBirth!,
+          gender: member.gender!,
+          occupation: member.occupation!,
+          annualIncome: member.annualIncome || 0,
+          medicalHistory: {
+            hasExistingConditions: false,
+            hasSurgeries: false,
+            smokingStatus: "never",
+            alcoholConsumption: "never",
+          }
+        }));
+    }
+
     // Save to session storage or state management
     const quotationData = {
       planType,
       primaryApplicant,
-      familyMembers: planType === "family" ? familyMembers : [],
+      familyMembers: planType === "family" ? validFamilyMembers : [],
       selectedBenefits: [],
       totalPremium: 0,
     };

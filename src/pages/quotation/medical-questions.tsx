@@ -268,9 +268,11 @@ const MedicalQuestionsPage = () => {
   };
 
   const saveMemberAnswers = (memberKey: string, formValues: any) => {
-    const answers: UnderwritingAnswer[] = Object.entries(formValues).map(([questionId, answer]) => ({
+    // Create properly typed answers array
+    const answers: UnderwritingAnswer[] = Object.entries(formValues).map(([questionId, value]) => ({
       questionId,
-      answer,
+      // Ensure the answer type matches what's expected in UnderwritingAnswer
+      answer: value as string | string[] | boolean | number
     }));
     
     setMemberAnswers(prev => ({
