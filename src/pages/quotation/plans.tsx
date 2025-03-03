@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Card, 
@@ -34,7 +33,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
-// Mock insurance plans
 const mockPlans: InsurancePlan[] = [
   {
     id: "plan-1",
@@ -333,6 +331,7 @@ const QuotationPlansPage = () => {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [plans, setPlans] = useState<InsurancePlan[]>([]);
   const [sumInsured, setSumInsured] = useState<number>(500000);
+  const coverageOptionsRef = useRef<HTMLDivElement>(null);
   
   const [progress, setProgress] = useState<QuoteProgress>({
     step: 4,
@@ -373,7 +372,15 @@ const QuotationPlansPage = () => {
     }
   }, [navigate]);
 
-  // Calculate the total premium for a plan
+  useEffect(() => {
+    if (selectedPlanId && coverageOptionsRef.current) {
+      coverageOptionsRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }
+  }, [selectedPlanId]);
+
   const calculatePremium = (plan: InsurancePlan): number => {
     const selectedBenefits = plan.benefits.filter(benefit => benefit.selected);
     const basePrice = plan.basePrice;
@@ -385,7 +392,6 @@ const QuotationPlansPage = () => {
     return basePrice + additionalPrice;
   };
   
-  // Calculate sum insured (total coverage) for a plan
   const calculateSumInsured = (plan: InsurancePlan): number => {
     const selectedBenefits = plan.benefits.filter(benefit => benefit.selected);
     return selectedBenefits.reduce(
@@ -394,7 +400,6 @@ const QuotationPlansPage = () => {
     );
   };
 
-  // Toggle a benefit selection
   const toggleBenefit = (planId: string, benefitName: string) => {
     setPlans(prevPlans => 
       prevPlans.map(plan => {
@@ -412,6 +417,10 @@ const QuotationPlansPage = () => {
         return plan;
       })
     );
+  };
+
+  const handleSelectPlan = (planId: string) => {
+    setSelectedPlanId(planId);
   };
 
   const handleContinue = () => {
@@ -525,7 +534,7 @@ const QuotationPlansPage = () => {
                 <Button 
                   variant={selectedPlanId === plan.id ? "default" : "outline"}
                   className="w-full"
-                  onClick={() => setSelectedPlanId(plan.id)}
+                  onClick={() => handleSelectPlan(plan.id)}
                 >
                   {selectedPlanId === plan.id ? (
                     <>
@@ -540,7 +549,7 @@ const QuotationPlansPage = () => {
         </div>
         
         {selectedPlanId && (
-          <div className="mt-12">
+          <div className="mt-12" ref={coverageOptionsRef}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Customize Your Coverage</h2>
               <div>
