@@ -14,6 +14,11 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import NotFound from "./pages/NotFound";
 import AppointmentsPage from "./pages/appointments/Index";
+import QuotationJourney from "./pages/quotation/Index";
+import QuotationDetails from "./pages/quotation/details/[type]";
+import MedicalQuestionsPage from "./pages/quotation/medical-questions";
+import QuotationPlansPage from "./pages/quotation/plans";
+import PurchasePage from "./pages/quotation/purchase";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +38,11 @@ const App = () => (
             <Route path="/appointments" element={<AppointmentsPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/quotation" element={<QuotationJourney />} />
+            <Route path="/quotation/details/:type" element={<QuotationDetails />} />
+            <Route path="/quotation/medical-questions" element={<MedicalQuestionsPage />} />
+            <Route path="/quotation/plans" element={<QuotationPlansPage />} />
+            <Route path="/quotation/purchase" element={<PurchasePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

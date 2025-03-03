@@ -90,6 +90,7 @@ export interface InsurancePlan {
   features: string[];
   minAge: number;
   maxAge: number;
+  recommended?: boolean;
 }
 
 export interface InsuranceBenefit {
@@ -128,4 +129,24 @@ export interface QuotationDetails {
   selectedPlanId?: string;
   selectedBenefits: string[];
   totalPremium: number;
+}
+
+export interface UnderwritingQuestion {
+  id: string;
+  question: string;
+  type: "yes-no" | "select" | "input" | "multi-select";
+  options?: string[];
+  category: "medical" | "financial" | "lifestyle";
+  required: boolean;
+}
+
+export interface UnderwritingAnswer {
+  questionId: string;
+  answer: string | string[] | boolean | number;
+}
+
+export interface QuoteProgress {
+  step: number;
+  totalSteps: number;
+  currentSection: string;
 }
