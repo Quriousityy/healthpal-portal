@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Card, 
@@ -26,6 +26,11 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
+  Users,
+  User,
+  Baby,
+  PersonStanding,
+  UserPlus,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
@@ -157,7 +162,7 @@ const mockPlans: InsurancePlan[] = [
       {
         name: "Maternity",
         coverage: 100000,
-        description: "Enhanced coverage for pregnancy and childbirth",
+        description: "Coverage for pregnancy and childbirth",
         isOptional: true,
         additionalPrice: 45,
         selected: false,
@@ -331,7 +336,6 @@ const QuotationPlansPage = () => {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [plans, setPlans] = useState<InsurancePlan[]>([]);
   const [sumInsured, setSumInsured] = useState<number>(500000);
-  const coverageOptionsRef = useRef<HTMLDivElement>(null);
   
   const [progress, setProgress] = useState<QuoteProgress>({
     step: 4,
@@ -373,12 +377,7 @@ const QuotationPlansPage = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (selectedPlanId && coverageOptionsRef.current) {
-      coverageOptionsRef.current.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'start' 
-      });
-    }
+    
   }, [selectedPlanId]);
 
   const calculatePremium = (plan: InsurancePlan): number => {
@@ -454,9 +453,24 @@ const QuotationPlansPage = () => {
     return selectedPlanId ? plans.find(plan => plan.id === selectedPlanId) || null : null;
   };
 
+  const getFamilyMemberIcon = (relation: string) => {
+    switch (relation?.toLowerCase()) {
+      case 'spouse':
+        return <Users className="h-5 w-5 text-sage-600" />;
+      case 'child':
+        return <Baby className="h-5 w-5 text-sage-600" />;
+      case 'parent':
+        return <PersonStanding className="h-5 w-5 text-sage-600" />;
+      default:
+        return <UserPlus className="h-5 w-5 text-sage-600" />;
+    }
+  };
+
   if (!quotationData || plans.length === 0) {
     return <div>Loading...</div>;
   }
+
+  const selectedPlan = getSelectedPlan();
 
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
@@ -468,192 +482,262 @@ const QuotationPlansPage = () => {
           Based on your information, we've selected the best plans for you. Compare and customize to find your perfect match.
         </p>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.id}
-              className={`relative h-full transition-all duration-200 
-                ${selectedPlanId === plan.id 
-                  ? 'border-primary shadow-lg' 
-                  : 'border-border hover:border-primary/70 hover:shadow-md'}`}
-            >
-              {plan.recommended && (
-                <div className="absolute -top-3 inset-x-0 mx-auto w-fit px-3 py-1 bg-primary text-primary-foreground rounded-full text-xs font-medium">
-                  Recommended
-                </div>
-              )}
-              
-              <CardHeader className={`pb-2 ${plan.recommended ? 'pt-6' : ''}`}>
-                <CardTitle className="text-xl">{plan.name}</CardTitle>
-                <CardDescription>{plan.description}</CardDescription>
-              </CardHeader>
-              
-              <CardContent className="pb-0">
-                <div className="mb-4">
-                  <p className="text-3xl font-bold">${calculatePremium(plan)}<span className="text-sm font-normal text-muted-foreground">/month</span></p>
-                  <p className="text-sm text-muted-foreground">Total sum insured: ${calculateSumInsured(plan).toLocaleString()}</p>
-                </div>
-                
-                <div className="space-y-2 mb-6">
-                  <h3 className="font-medium">Key Features:</h3>
-                  <ul className="space-y-1">
-                    {plan.features.slice(0, 4).map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                    {plan.features.length > 4 && (
-                      <li className="text-sm text-primary">+{plan.features.length - 4} more features</li>
-                    )}
-                  </ul>
-                </div>
-                
-                <h3 className="font-medium mb-2">Top Coverages:</h3>
-                <ul className="space-y-1 mb-6">
-                  {plan.benefits
-                    .filter(benefit => !benefit.isOptional)
-                    .slice(0, 3)
-                    .map((benefit) => (
-                      <li key={benefit.name} className="flex items-start gap-2 text-sm">
-                        <Shield className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                        <div>
-                          <span className="font-medium">{benefit.name}</span>: ${benefit.coverage.toLocaleString()}
-                        </div>
-                      </li>
-                    ))}
-                  {plan.benefits.filter(benefit => !benefit.isOptional).length > 3 && (
-                    <li className="text-sm text-primary">
-                      +{plan.benefits.filter(benefit => !benefit.isOptional).length - 3} more coverages
-                    </li>
-                  )}
-                </ul>
-              </CardContent>
-              
-              <CardFooter className="flex-col items-stretch gap-2">
-                <Button 
-                  variant={selectedPlanId === plan.id ? "default" : "outline"}
-                  className="w-full"
-                  onClick={() => handleSelectPlan(plan.id)}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Plan selection column */}
+          <div className="lg:w-1/2">
+            <h2 className="text-xl font-semibold mb-4">Available Plans</h2>
+            <div className="grid grid-cols-1 gap-4">
+              {plans.map((plan) => (
+                <Card 
+                  key={plan.id}
+                  className={`relative h-full transition-all duration-200 
+                    ${selectedPlanId === plan.id 
+                      ? 'border-sage-500 shadow-[0_4px_15px_rgba(0,0,0,0.1)] bg-sage-50/30' 
+                      : 'border-border hover:border-sage-400 hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]'}`}
                 >
-                  {selectedPlanId === plan.id ? (
-                    <>
-                      <CheckCircle2 className="h-4 w-4 mr-2" />
-                      Selected
-                    </>
-                  ) : "Select Plan"}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-        
-        {selectedPlanId && (
-          <div className="mt-12" ref={coverageOptionsRef}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Customize Your Coverage</h2>
-              <div>
-                <p className="text-sm text-muted-foreground">Selected Plan: <span className="font-medium">{getSelectedPlan()?.name}</span></p>
-              </div>
-            </div>
-            
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <CardTitle>Coverage Options</CardTitle>
-                    <CardDescription>Customize your plan by selecting additional benefits</CardDescription>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold">
-                      ${getSelectedPlan() ? calculatePremium(getSelectedPlan()!) : 0}
-                      <span className="text-sm font-normal text-muted-foreground">/month</span>
+                  {plan.recommended && (
+                    <div className="absolute -top-3 inset-x-0 mx-auto w-fit px-3 py-1 bg-sage-500 text-white rounded-full text-xs font-medium">
+                      Recommended
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      Sum insured: ${getSelectedPlan() ? calculateSumInsured(getSelectedPlan()!).toLocaleString() : 0}
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">Required Benefits</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {getSelectedPlan()?.benefits
-                        .filter(benefit => !benefit.isOptional)
-                        .map((benefit) => (
-                          <Card key={benefit.name} className="border border-primary/20 bg-primary/5">
-                            <CardContent className="p-4">
-                              <div className="flex items-start gap-3">
-                                <div className="bg-primary/10 p-2 rounded-full h-8 w-8 flex items-center justify-center mt-0.5">
-                                  <Shield className="h-4 w-4 text-primary" />
-                                </div>
-                                <div>
-                                  <h4 className="font-medium">{benefit.name}</h4>
-                                  <p className="text-sm text-muted-foreground mb-1">{benefit.description}</p>
-                                  <Badge variant="outline" className="bg-background">
-                                    ${benefit.coverage.toLocaleString()}
-                                  </Badge>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                    </div>
-                  </div>
+                  )}
                   
-                  <div className="mt-8">
-                    <h3 className="text-lg font-medium mb-2">Optional Benefits</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Select additional benefits to enhance your coverage
-                    </p>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {getSelectedPlan()?.benefits
-                        .filter(benefit => benefit.isOptional)
-                        .map((benefit) => (
-                          <Card 
-                            key={benefit.name} 
-                            className={`border transition-all cursor-pointer hover:border-primary/70 hover:shadow-sm ${benefit.selected ? 'border-primary bg-primary/5' : ''}`}
-                            onClick={() => toggleBenefit(selectedPlanId!, benefit.name)}
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-start gap-3">
-                                <div className={`p-2 rounded-full h-8 w-8 flex items-center justify-center mt-0.5
-                                  ${benefit.selected ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                                  <Checkbox 
-                                    checked={benefit.selected}
-                                    className="h-4 w-4"
-                                  />
-                                </div>
-                                <div>
-                                  <h4 className="font-medium">{benefit.name}</h4>
-                                  <p className="text-sm text-muted-foreground mb-1">{benefit.description}</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    <Badge variant="outline" className="bg-background">
-                                      ${benefit.coverage.toLocaleString()}
-                                    </Badge>
-                                    <Badge variant="outline" className="bg-background text-primary">
-                                      +${benefit.additionalPrice}/month
-                                    </Badge>
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+                  <CardHeader className={`pb-2 ${plan.recommended ? 'pt-6' : ''}`}>
+                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <CardDescription>{plan.description}</CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="pb-0">
+                    <div className="mb-4">
+                      <p className="text-3xl font-bold text-sage-700">${calculatePremium(plan)}<span className="text-sm font-normal text-muted-foreground">/month</span></p>
+                      <p className="text-sm text-muted-foreground">Total sum insured: ${calculateSumInsured(plan).toLocaleString()}</p>
                     </div>
+                    
+                    <div className="space-y-2 mb-6">
+                      <h3 className="font-medium">Key Features:</h3>
+                      <ul className="space-y-1">
+                        {plan.features.slice(0, 4).map((feature, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <Check className="h-4 w-4 text-sage-600 mt-0.5 shrink-0" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                        {plan.features.length > 4 && (
+                          <li className="text-sm text-sage-600">+{plan.features.length - 4} more features</li>
+                        )}
+                      </ul>
+                    </div>
+                    
+                    <h3 className="font-medium mb-2">Top Coverages:</h3>
+                    <ul className="space-y-1 mb-6">
+                      {plan.benefits
+                        .filter(benefit => !benefit.isOptional)
+                        .slice(0, 3)
+                        .map((benefit) => (
+                          <li key={benefit.name} className="flex items-start gap-2 text-sm">
+                            <Shield className="h-4 w-4 text-sage-600 mt-0.5 shrink-0" />
+                            <div>
+                              <span className="font-medium">{benefit.name}</span>: ${benefit.coverage.toLocaleString()}
+                            </div>
+                          </li>
+                        ))}
+                      {plan.benefits.filter(benefit => !benefit.isOptional).length > 3 && (
+                        <li className="text-sm text-sage-600">
+                          +{plan.benefits.filter(benefit => !benefit.isOptional).length - 3} more coverages
+                        </li>
+                      )}
+                    </ul>
+                  </CardContent>
+                  
+                  <CardFooter className="flex-col items-stretch gap-2">
+                    <Button 
+                      variant={selectedPlanId === plan.id ? "default" : "outline"}
+                      className={`w-full ${selectedPlanId === plan.id ? 'bg-sage-600 hover:bg-sage-700' : 'border-sage-200 text-sage-700 hover:bg-sage-50'}`}
+                      onClick={() => handleSelectPlan(plan.id)}
+                    >
+                      {selectedPlanId === plan.id ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                          Selected
+                        </>
+                      ) : "Select Plan"}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </div>
+          
+          {/* Customization column */}
+          <div className="lg:w-1/2">
+            {!selectedPlan ? (
+              <div className="h-full flex items-center justify-center p-8 border-2 border-dashed border-muted-foreground/20 rounded-lg">
+                <div className="text-center text-muted-foreground">
+                  <Shield className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                  <h3 className="text-xl font-medium mb-2">Select a Plan</h3>
+                  <p>Choose a plan from the left to customize your coverage options</p>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold">Customize Your Coverage</h2>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Selected: <span className="font-medium text-sage-700">{selectedPlan.name}</span></p>
                   </div>
                 </div>
-              </CardContent>
+                
+                <Card className="shadow-[0_4px_15px_rgba(0,0,0,0.07)] border-sage-100">
+                  <CardHeader className="bg-sage-50/50 rounded-t-lg border-b border-sage-100">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div>
+                        <CardTitle className="text-sage-800">Coverage Options</CardTitle>
+                        <CardDescription>Customize your plan by selecting additional benefits</CardDescription>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-sage-700">
+                          ${calculatePremium(selectedPlan)}
+                          <span className="text-sm font-normal text-muted-foreground">/month</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Sum insured: ${calculateSumInsured(selectedPlan).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="max-h-[calc(100vh-380px)] overflow-y-auto">
+                    <div className="space-y-6 py-2">
+                      <div>
+                        <h3 className="text-lg font-medium mb-2 text-sage-800">Required Benefits</h3>
+                        <div className="grid grid-cols-1 gap-3">
+                          {selectedPlan.benefits
+                            .filter(benefit => !benefit.isOptional)
+                            .map((benefit) => (
+                              <Card key={benefit.name} className="border border-sage-200/80 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+                                <CardContent className="p-3">
+                                  <div className="flex items-start gap-3">
+                                    <div className="bg-sage-100 p-2 rounded-full h-8 w-8 flex items-center justify-center mt-0.5">
+                                      <Shield className="h-4 w-4 text-sage-600" />
+                                    </div>
+                                    <div>
+                                      <h4 className="font-medium text-sage-800">{benefit.name}</h4>
+                                      <p className="text-sm text-muted-foreground mb-1">{benefit.description}</p>
+                                      <Badge variant="outline" className="bg-white border-sage-200 text-sage-700">
+                                        ${benefit.coverage.toLocaleString()}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-medium mb-2 text-sage-800">Optional Benefits</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Select additional benefits to enhance your coverage
+                        </p>
+                        
+                        <div className="grid grid-cols-1 gap-3">
+                          {selectedPlan.benefits
+                            .filter(benefit => benefit.isOptional)
+                            .map((benefit) => (
+                              <Card 
+                                key={benefit.name} 
+                                className={`border transition-all cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.03)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.07)] 
+                                  ${benefit.selected ? 'border-sage-500 bg-sage-50/50' : 'border-sage-200/80'}`}
+                                onClick={() => toggleBenefit(selectedPlanId!, benefit.name)}
+                              >
+                                <CardContent className="p-3">
+                                  <div className="flex items-start gap-3">
+                                    <div className={`p-2 rounded-full h-8 w-8 flex items-center justify-center mt-0.5
+                                      ${benefit.selected ? 'bg-sage-500 text-white' : 'bg-sage-100 text-sage-500'}`}>
+                                      <Checkbox 
+                                        checked={benefit.selected}
+                                        className="h-4 w-4"
+                                      />
+                                    </div>
+                                    <div>
+                                      <h4 className="font-medium text-sage-800">{benefit.name}</h4>
+                                      <p className="text-sm text-muted-foreground mb-1">{benefit.description}</p>
+                                      <div className="flex flex-wrap gap-2">
+                                        <Badge variant="outline" className="bg-white border-sage-200 text-sage-700">
+                                          ${benefit.coverage.toLocaleString()}
+                                        </Badge>
+                                        <Badge variant="outline" className="bg-white border-sage-200 text-sage-600">
+                                          +${benefit.additionalPrice}/month
+                                        </Badge>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                  
+                  <CardFooter className="flex justify-end bg-sage-50/50 rounded-b-lg border-t border-sage-100 mt-2">
+                    <Button onClick={handleContinue} className="bg-sage-600 hover:bg-sage-700">
+                      Continue to Purchase
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Family members section for family plans */}
+        {quotationData.planType === "family" && quotationData.familyMembers && quotationData.familyMembers.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-xl font-semibold mb-4">Family Members Covered</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Primary member */}
+              <Card className="border border-sage-200 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-sage-100 p-2 rounded-full">
+                      <User className="h-5 w-5 text-sage-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sage-800">Primary Insured</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {quotationData.firstName} {quotationData.lastName}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    <p>Age: {quotationData.age || 'N/A'}</p>
+                    <p>Gender: {quotationData.gender || 'N/A'}</p>
+                  </div>
+                </CardContent>
+              </Card>
               
-              <CardFooter className="flex justify-end">
-                <Button onClick={handleContinue} className="w-full md:w-auto">
-                  Continue to Purchase
-                </Button>
-              </CardFooter>
-            </Card>
+              {/* Family members */}
+              {quotationData.familyMembers.map((member: any, index: number) => (
+                <Card key={index} className="border border-sage-200 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="bg-sage-100 p-2 rounded-full">
+                        {getFamilyMemberIcon(member.relation)}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sage-800">{member.relation}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {member.firstName} {member.lastName}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p>Age: {member.age || 'N/A'}</p>
+                      <p>Gender: {member.gender || 'N/A'}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         )}
       </div>
