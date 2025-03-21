@@ -42,7 +42,7 @@ export function ClaimsSection({ claims }: ClaimsSectionProps) {
                   <p className="font-medium">{claim.id}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ClaimAnalysis claim={claim} buttonVariant="outline" />
+                  <ClaimAnalysis claims={[claim]} buttonVariant="outline" />
                   <StatusBadge status={claim.status} />
                 </div>
               </div>
