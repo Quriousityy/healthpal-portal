@@ -1,4 +1,3 @@
-
 import { Policy, Claim } from "@/lib/types";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -15,9 +14,12 @@ import {
   Building,
   Activity,
   TestTube,
-  ShieldCheck
+  ShieldCheck,
+  FileSearch2
 } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ClaimAnalysis } from "./claim-analysis";
 
 interface PolicyCardProps {
   policy: Policy;
@@ -79,7 +81,18 @@ export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardP
             <p className="text-sm text-muted-foreground">Policy Number</p>
             <h3 className="text-lg font-semibold">{policy.policyNumber}</h3>
           </div>
-          <StatusBadge status={policy.status} />
+          <div className="flex items-center gap-2">
+            {claims.length > 0 && (
+              <div onClick={handleAccordionClick}>
+                <ClaimAnalysis 
+                  claim={claims[0]} 
+                  buttonVariant="outline"
+                  buttonSize="sm"
+                />
+              </div>
+            )}
+            <StatusBadge status={policy.status} />
+          </div>
         </div>
         
         <div className="space-y-4">
@@ -157,7 +170,16 @@ export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardP
                           
                           {getClaimsForBenefit(benefit.name).length > 0 && (
                             <div className="mt-3 pt-3 border-t">
-                              <p className="text-sm font-medium mb-2">Claim History</p>
+                              <div className="flex justify-between items-center mb-2">
+                                <p className="text-sm font-medium">Claim History</p>
+                                {getClaimsForBenefit(benefit.name).length > 0 && (
+                                  <ClaimAnalysis 
+                                    claim={getClaimsForBenefit(benefit.name)[0]} 
+                                    buttonVariant="ghost"
+                                    buttonSize="sm"
+                                  />
+                                )}
+                              </div>
                               {getClaimsForBenefit(benefit.name).map((claim) => (
                                 <div key={claim.id} className="flex justify-between text-sm py-1">
                                   <span className="text-muted-foreground">

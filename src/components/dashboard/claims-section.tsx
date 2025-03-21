@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { ClaimAnalysis } from "./claim-analysis";
 
 interface ClaimsSectionProps {
   claims: Claim[];
@@ -40,7 +41,10 @@ export function ClaimsSection({ claims }: ClaimsSectionProps) {
                   <p className="text-sm text-muted-foreground">Claim ID</p>
                   <p className="font-medium">{claim.id}</p>
                 </div>
-                <StatusBadge status={claim.status} />
+                <div className="flex items-center gap-2">
+                  <ClaimAnalysis claim={claim} buttonVariant="outline" />
+                  <StatusBadge status={claim.status} />
+                </div>
               </div>
               
               <div className="grid gap-6 md:grid-cols-2">
