@@ -1,3 +1,4 @@
+
 import { Policy, Claim } from "@/lib/types";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -85,7 +86,7 @@ export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardP
             {claims.length > 0 && (
               <div onClick={handleAccordionClick}>
                 <ClaimAnalysis 
-                  claim={claims[0]} 
+                  claims={claims} 
                   buttonVariant="outline"
                   buttonSize="sm"
                 />
@@ -174,7 +175,7 @@ export function PolicyCard({ policy, claimsCount = 0, claims = [] }: PolicyCardP
                                 <p className="text-sm font-medium">Claim History</p>
                                 {getClaimsForBenefit(benefit.name).length > 0 && (
                                   <ClaimAnalysis 
-                                    claim={getClaimsForBenefit(benefit.name)[0]} 
+                                    claims={getClaimsForBenefit(benefit.name)} 
                                     buttonVariant="ghost"
                                     buttonSize="sm"
                                   />
